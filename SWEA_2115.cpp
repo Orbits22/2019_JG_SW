@@ -4,91 +4,82 @@
 using namespace std;
 
 int N, M, C, T;
-int maxSum;
-int arr[11][11], bac1[11], bac2[11];
+int maxVal1, maxVal2, result;
+int arr[11][11];
+bool visited[11][11];
 
 void InitFunc() {
-	maxSum = 0;
-
+	result = 0;
 	scanf("%d %d %d", &N, &M, &C);
 
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
 			scanf("%d", &arr[i][j]);
-		}
+}
+
+void getMaxVal(int &maxVal, int r, int c, int target, int sum, int answer)
+{
+	if (sum > C) {
+		return;
+	}
+	else if (target == M) {
+		if (maxVal < answer)
+			maxVal = answer;
+		return;
+	}
+	else {
+		getMaxVal(maxVal, r, c + 1, target + 1, sum + arr[r][c], answer + arr[r][c] * arr[r][c]);
+		getMaxVal(maxVal, r, c + 1, target + 1, sum, answer);
 	}
 }
 
-void findMaxVal(int r1, int c1, int r2, int c2) {
-	int sum1 = 0 , sum2 = 0;
-	int answer1 = 0, answer2 = 0;
-	
-	for (int i = 0; i < M; i++) {
-		bac1[i] = arr[r1][c1 + i];
-		bac2[i] = arr[r2][c2 + i];
+bool checkT(int i, int j) { // 겹치지 않는지 확인하는 함수
+	for (int k = 0; k < M; k++) {
+		if (visited[i][j + k] == true)
+			return true;
 	}
-
-	sort(&arr[r1][c1], &arr[r1][c1 + M]);
-	sort(&arr[r2][c2], &arr[r2][c2 + M]);
-
-	for (int i = M-1; i >= 0; i--) {
-		if (sum1 + arr[r1][c1 + i] < C) {
-			sum1 += arr[r1][c1 + i];
-			answer1 += arr[r1][c1 + i] * arr[r1][c1 + i];
-		}
-
-		if (sum2 + arr[r2][c2 + i] < C) {
-			sum2 += arr[r2][c2 + i];
-			answer2 += arr[r2][c2 + i] * arr[r2][c2 + i];
-		}
-	}
-
-	if (maxSum < answer1 + answer2) {
-		maxSum = answer1 + answer2;
-	}
-
-	for (int i = 0; i < M; i++) {
-		arr[r1][c1 + i] = bac1[i];
-		arr[r2][c2 + i] = bac2[i];
-	}
-
+	return false;
 }
 
-void solve() {
+int solve(int r, int c) {
+	// 초기화
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++)
+			visited[i][j] = false;
+	maxVal1 = maxVal2 = 0;
 
-	for (int r1 = 0; r1 < N - M + 1; r1++) {
-		for (int c1 = 0; c1 < N - M + 1; c1++) {
+	//첫번째 일꾼이 선택
+	for (int i = 0; i < M; i++)
+		visited[r][c + i] = true;
 
-			for (int r2 = 0; r2 < N - M + 1; r2++) {
-				for (int c2 = 0; c2 < N - M + 1; c2++) {
+	// 첫번째 일꾼 최대값 구하기
+	getMaxVal(maxVal1, r, c, 0, 0, 0);
 
-					if (r1 == r2) {
-						if (c2+M-1 < c1 || c1+M-1 < c2)
-							findMaxVal(r1, c1, r2, c2);
-					}
-					else {
-						findMaxVal(r1, c1, r2, c2);
-					}
-				}
+	//두번째 일꾼이 겹치지 않게 선택
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N - M + 1; j++) {
+			if (checkT(i, j) == false) {
+				// 두번째 일꾼 최대값 구하기
+				getMaxVal(maxVal2, i, j, 0, 0, 0);
 			}
 		}
 	}
-
-	
+	return maxVal1 + maxVal2;
 }
 
 int main() {
 	scanf("%d", &T);
 
-	for (int t = 1; t <= T; t++) 
+	for (int t = 1; t <= T; t++)
 	{
 		InitFunc();
-		
-		solve();
 
-		printf("#%d %d\n", t, maxSum);
+		for (int r = 0; r < N; r++)
+			for (int c = 0; c < N - M + 1; c++)
+				result = max(result, solve(r, c));
+
+		printf("#%d %d\n", t, result);
 	}
 
-	
 	return 0;
 }
