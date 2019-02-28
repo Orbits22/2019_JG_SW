@@ -1,7 +1,5 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
 /**
@@ -19,53 +17,45 @@ public class mwkim_20190304_02 {
 	
 	static void setSecuZone() {
 		boolean[][] temp = new boolean[N][N];
-		for(int k = 1; k <= N + 1; k++) {
-			cost = calcCost(k);
-			for(int y = 0; y < N; y++) {
-				for(int x = 0; x < N; x++) {
-					temp = new boolean[N][N];
-					pay = 0;
-					house = 0;
-					Queue<int[]>queue = new LinkedList<int[]>();
-					int[] temp_map = new int[3];
-					temp_map[0] = y;
-					temp_map[1] = x;
-					temp_map[2] = 1;
-					queue.add(temp_map);
+		for(int y = 0; y < N; y++) {
+			for(int x = 0; x < N; x++) {
+				temp = new boolean[N][N];
+				pay = 0;
+				house = 0;
+				
+				temp[y][x] = true;
+				if(matrix[y][x] == 1) {
+					house++;
+					pay += M;
+				}
+				
+				for(int k = 0; k <= N; k++) {
+					cost = calcCost(k + 1);
 					
-					temp[y][x] = true;
-					if(matrix[y][x] == 1) {
-						house++;
-						pay += M;
-					}
-
-					while(!queue.isEmpty()) {
-						int[] cur = queue.poll();
-						
-						if(cur[2] < k) {
-							for(int i = 0; i < 4; i++) {
-								int[] next = new int[3];
-								next[0] = cur[0] + move[i][0];
-								next[1] = cur[1] + move[i][1];
+					for(int limit = k; limit >= 0; limit--) {
+						for(int dy = 0; dy < 4; dy++) {
+							int new_y = y + (move[dy][0] * (k - limit));
+							
+							if(new_y >= N || new_y < 0)
+								continue;
+							
+							for(int dx = 0; dx < 4; dx++) {
+								int new_x = x + (move[dx][1] * limit);
 								
-								if(next[0] >= N || next[1] >= N || next[0] < 0 || next[1] < 0)
+								if(new_x >= N || new_x < 0)
 									continue;
 								
-								if(temp[next[0]][next[1]])
+								if(temp[new_y][new_x])
 									continue;
 								
-								next[2] = cur[2] + 1;
-								temp[next[0]][next[1]] = true;
-								if(matrix[next[0]][next[1]] == 1) {
+								temp[new_y][new_x] = true;
+								if(matrix[new_y][new_x] == 1) {
 									house++;
 									pay += M;
 								}
-								
-								queue.add(next);
 							}
 						}
 					}
-					//System.out.println("[k: " + k + "][" + y + "][" + x + "]: " + cost + ":" + pay + " :::: " + house);
 					if(pay >= cost) {
 						result = Math.max(result, house);
 						if(result == N * N)
