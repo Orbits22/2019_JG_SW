@@ -11,7 +11,7 @@ typedef struct bc {
 }BC;
 
 BC BClist[8];
-int answer1,answer2;
+int answer1, answer2;
 int map[11][11], M, A;
 int area[8][11][11];
 int dr[5] = { 0,-1,0,1,0 };
@@ -19,47 +19,41 @@ int dc[5] = { 0,0,1,0,-1 };
 int path1[100], path2[100];
 int r1, c1, r2, c2;
 
+void drawOneline(int i, int c, int pos, int BCnum, int P) {
+	for (int j = c - pos; j <= c + pos; j++) {
+		if ((1 <= i && i <= 10)
+			&& (1 <= j && j <= 10)) {
+			area[BCnum][i][j] = P;
+		}
+	}
+}
+
 void setArea(int BCnum, int r, int c, int C, int P) {
 	int pos = 0;
 	for (int i = r - C; i <= r + C; i++) {
 		if (i < r) {
-			for (int j = c - pos; j <= c + pos; j++) {
-				if ((1 <= i && i <= 10)
-					&& (1 <= j && j <= 10)) {
-					area[BCnum][i][j] = P;
-				}
-			}
+			drawOneline(i, c, pos, BCnum, P);
 			pos++;
 		}
 		else {
-			for (int j = c - pos; j <= c + pos; j++) {
-				if ((1 <= i && i <= 10)
-					&& (1 <= j && j <= 10)) {
-					area[BCnum][i][j] = P;
-				}
-			}
+			drawOneline(i, c, pos, BCnum, P);
 			pos--;
 		}
 	}
 }
 
 void init() {
-	memset(area,0,sizeof(area));
+	memset(area, 0, sizeof(area));
 	cin >> M >> A;
-	
 	for (int i = 0; i < M; i++)
 		cin >> path1[i];
 	for (int i = 0; i < M; i++)
 		cin >> path2[i];
-	
 	for (int i = 0; i < A; i++)
 		cin >> BClist[i].c >> BClist[i].r >> BClist[i].C >> BClist[i].P;
-
 	for (int i = 0; i < A; i++)
 		setArea(i, BClist[i].r, BClist[i].c, BClist[i].C, BClist[i].P);
-
 }
-
 
 void setV(int i, int r, int c, vector<pair<int, int>> &v) {
 	int p;
@@ -77,7 +71,7 @@ int calc() {
 		setV(i, r1, c1, v1);
 		setV(i, r2, c2, v2);
 	}
-	
+
 	//v1에는 사람1이 접속할 수 있는 BC의 정보 저장
 	if (v1.size() != 0 && v2.size() != 0)
 	{
@@ -89,8 +83,8 @@ int calc() {
 				p[0] = v1[i].second;
 				p[1] = v2[j].second;
 				if (BCnum[0] == BCnum[1]) {
-					answer1 = p[0]/2;
-					answer2 = p[1]/2;
+					answer1 = p[0] / 2;
+					answer2 = p[1] / 2;
 				}
 				else {
 					answer1 = p[0];
@@ -101,14 +95,12 @@ int calc() {
 		}
 	}
 	else if (v1.size() == 0) {
-		for (int i = 0; i < v2.size(); i++) {
+		for (int i = 0; i < v2.size(); i++)
 			ret = max(ret, v2[i].second);
-		}
 	}
 	else if (v2.size() == 0) {
-		for (int i = 0; i < v1.size(); i++) {
+		for (int i = 0; i < v1.size(); i++)
 			ret = max(ret, v1[i].second);
-		}
 	}
 
 	return ret;
@@ -137,12 +129,10 @@ int main() {
 	cin.tie(false);
 	int T, answer;
 	cin >> T;
-	for (int t = 1; t <= T; t++) 
+	for (int t = 1; t <= T; t++)
 	{
 		init();
-
 		answer = solve();
-
 		printf("#%d %d\n", t, answer);
 	}
 
