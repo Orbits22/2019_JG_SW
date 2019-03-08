@@ -1,4 +1,4 @@
-package JG;
+/*package JG;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -91,4 +91,4 @@ class BC{
 		this.c = c;
 		this.p = p;
 	}
-}
+}*/
