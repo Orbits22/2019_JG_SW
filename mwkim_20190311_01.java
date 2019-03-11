@@ -38,15 +38,13 @@ public class mwkim_20190311_01 {
 	}
 	
 	static void insert(int cur_y, int num) {
-		if(result > num && test()) {
-			result = num;
+		if(num >= result)
 			return;
-		}
 		
-		if(num >= K)
-			return;
-
-		if(cur_y == D) {
+		if(cur_y == D ) {
+			if(test()) {
+				result = num;
+			}
 			return;
 		}
 		
