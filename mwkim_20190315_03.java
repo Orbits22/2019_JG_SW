@@ -1,7 +1,5 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
 /**
@@ -14,7 +12,6 @@ public class mwkim_20190315_03 {
 	static int[][] map;
 	static int[][] move = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 	static int[][][] w_hole;
-	static boolean check[][][];
 	
 	static int changeD(int type, int d) {
 		int new_d = (d + 2) % 4; //0 -> 2 | 1 -> 3 | 2 -> 0 | 3 -> 1
@@ -65,58 +62,50 @@ public class mwkim_20190315_03 {
 		return new_d;
 	}
 	
-	static void moving(int[] first) {
-		Queue<int[]> queue = new LinkedList<int[]>();
-		queue.add(first);
+	static void moving(int[] ball) {
+		int[] start = ball.clone();
 		int moved = 0;
 		
-		while(!queue.isEmpty()) {
-			int[] cur = queue.poll();
-			
-			int[] next = new int[4];
-			next[0] = cur[0] + move[cur[2]][0];
-			next[1] = cur[1] + move[cur[2]][1];
-			
-			if(next[0] > N || next[1] > N || next[0] < 1 || next[1] < 1) {
-				next[2] = changeD(0, cur[2]);
-				next[3] = cur[3] + 1;
+		while(true) {			
+			if(ball[0] > N || ball[1] > N || ball[0] < 1 || ball[1] < 1) {
+				ball[2] = changeD(0, ball[2]);
+				ball[3]++;
+				ball[0] += move[ball[2]][0];
+				ball[1] += move[ball[2]][1];
 			}
-			else if(map[next[0]][next[1]] > 0 && map[next[0]][next[1]] < 6) {
-				next[2] = changeD(map[next[0]][next[1]], cur[2]);
-				next[3] = cur[3] + 1;
+			else if(map[ball[0]][ball[1]] > 0 && map[ball[0]][ball[1]] < 6) {
+				ball[2] = changeD(map[ball[0]][ball[1]], ball[2]);
+				ball[3]++;
+				ball[0] += move[ball[2]][0];
+				ball[1] += move[ball[2]][1];
 			}
-			else if(map[next[0]][next[1]] > 5) {
-				int wh = map[next[0]][next[1]] - 6;
+			else if(map[ball[0]][ball[1]] > 5) {
+				int wh = map[ball[0]][ball[1]] - 6;
 				for(int i = 0; i < 2; i++) {
-					if(w_hole[wh][i][0] != next[0] && w_hole[wh][i][1] != next[1]) {
-						next[0] = w_hole[wh][i][0];
-						next[1] = w_hole[wh][i][1];
+					if(w_hole[wh][i][0] != ball[0] || w_hole[wh][i][1] != ball[1]) {
+						ball[0] = w_hole[wh][i][0];
+						ball[1] = w_hole[wh][i][1];
 						break;
 					}
 				}
-				next[2] = cur[2];
-				next[3] = cur[3];
+				ball[0] += move[ball[2]][0];
+				ball[1] += move[ball[2]][1];
 			}
 			else {
-				next[2] = cur[2];
-				next[3] = cur[3];
+				ball[0] += move[ball[2]][0];
+				ball[1] += move[ball[2]][1];
 			}
-
-			if(check[next[0]][next[1]][next[2]])
-				continue;
+			moved++;
 			
 			//if(first[0] == 3 && first[1] == 4)
 			//System.out.println("[" + first[0] + "][" +first[1] +  "][" + first[2] + "] | [" + cur[0] + "][" + cur[1] + "][" + cur[2] + "] -> [" + next[0] + "][" + next[1] + "][" + next[2] + "] | " + next[3] + " :::: " + map[next[0]][next[1]]);
+			//System.out.println("[" + start[0] + "][" +start[1] +  "][" + start[2] + "] | [" + ball[0] + "][" + ball[1] + "][" + ball[2] + "] -> " + ball[3] + " :::: " + map[ball[0]][ball[1]]);
 			
-			if((moved > 0 && next[0] == first[0] && next[1] == first[1]) || map[next[0]][next[1]] == -1) {
-				result = Math.max(result, cur[3]);
+			if((moved > 0 && start[0] == ball[0] && start[1] == ball[1]) || map[ball[0]][ball[1]] == -1) {
+				result = Math.max(result, ball[3]);
 				return;
 			}
 			
-			check[next[0]][next[1]][next[2]] = true;
-			queue.add(next);
-			
-			moved++;
 		}
 	}
 
@@ -150,13 +139,12 @@ public class mwkim_20190315_03 {
 				for(int x = 1; x <= N; x++) {
 					if(map[y][x] != 0)
 						continue;
-					
-					int[] first = new int[4]; //y좌표 x좌표 방향 포인트
-					first[0] = y;
-					first[1] = x;
-					first[3] = 0;
-					check = new boolean[N + 2][N + 2][4];
+
 					for(int d = 0; d < 4; d++) {
+						int[] first = new int[4]; //y좌표 x좌표 방향 포인트
+						first[0] = y;
+						first[1] = x;
+						first[3] = 0;
 						first[2] = d;
 						moving(first);
 					}
