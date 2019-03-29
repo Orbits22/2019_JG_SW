@@ -1,0 +1,51 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int N = 0, K = 0;
+
+int main(int argc, char** argv)
+{
+	int test_case;
+	int T;
+	int tmp = 0;
+	int cnt = 0;
+	int sum = 0;
+	cin >> T;
+	/*
+	여러 개의 테스트 케이스가 주어지므로, 각각을 처리합니다.
+	*/
+	for (test_case = 1; test_case <= T; ++test_case)
+	{
+		vector<int> num, diff;
+		cnt = 0;
+		scanf("%d", &N);
+		scanf("%d", &K);
+		for (int i = 0; i < N; i++) {
+			scanf("%d", &tmp);
+			num.push_back(tmp);
+		}
+		if (N <= K) {
+			printf("#%d %d\n", test_case, 0);
+		}
+		else{
+			sort(num.begin(), num.end()); // num.end() , num.begin() != num[N-1] , num[0]
+
+			sum = num.back() - num.front(); // 가장 긴 초기 합 
+
+			for (int i = 0; i < N - 1; i++) {
+				diff.push_back(num[i + 1] - num[i]);
+			}
+			sort(diff.begin(), diff.end());
+
+			for (int i = N - 2; i > N - K - 1;i--) {
+				sum = sum - diff[i];
+			}
+			printf("#%d %d\n",test_case,sum);
+		}
+	}
+	return 0;//정상종료시 반드시 0을 리턴해야합니다.
+}
