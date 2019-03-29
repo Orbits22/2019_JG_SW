@@ -1,0 +1,74 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <iostream>
+#include <limits>
+#include <algorithm>
+#include <string.h>
+using namespace std;
+int N = 0;
+bool visit[20] = { 0, };
+long long result = numeric_limits<long long>::max();
+int num[20][2] = { 0, };
+
+//long long size(long long diff_r, long long diff_c) {
+//	long long vector_size = 0;
+//	vector_size = diff_r*diff_r + diff_c*diff_c;         // diff_r, diff_c 가 int 면 x, diff_r*diff_r 은 현재 diff_r의 자료형 크기내에서 연산이지, vector_size_r의 연산이 x 연산크기는 먼저 diff_r의 크기에서 하는 것
+//	return vector_size;
+//}
+
+int connect(long long tmp_sum_r, long long tmp_sum_c, int level) {
+	/*printf("--------------------------------------\n");
+	printf("%d || %d\n ", level, result);
+	for (int i = 0; i < N; i++) {
+		printf("%d ", visit[i]);
+	}
+	printf("\n");*/
+	int t_sum_r;
+	int t_sum_c;
+	if (level == N) {
+		result = min(result, tmp_sum_r*tmp_sum_r + tmp_sum_c*tmp_sum_c);
+		return 0;
+	}
+
+	for (int i = 0; i < N; i++) {
+		if (visit[i] == 1) {
+			continue;
+		}
+		visit[i] = 1;
+		for (int j = 0; j < N; j++) {
+			if (i == j || visit[j] == 1) {
+				continue;
+			}
+			t_sum_r = tmp_sum_r;
+			t_sum_c = tmp_sum_c;
+			visit[j] = 1;
+			t_sum_r = t_sum_r + num[i][0] - num[j][0];
+			t_sum_c = t_sum_c + num[i][1] - num[j][1];
+			connect(t_sum_r, t_sum_c , level + 2);
+			visit[j] = 0;
+		}
+		visit[i] = 0;
+	}
+	return 0;
+}
+
+int main() {
+	int i = 0, j = 0;
+	int T = 0;
+	int temp_r = 0, temp_c = 0;
+	scanf("%d", &T);
+	for (int test = 1; test <= T; test++) {
+		memset(visit, 0, sizeof(visit));
+		memset(num, 0, sizeof(num));
+		result = numeric_limits<long long>::max();
+		scanf("%d", &N);
+		for (i = 0; i < N; i++) {
+			scanf("%d %d", &num[i][0], &num[i][1]);
+		}
+
+		connect(0,0,0);
+		printf("#%d %lli\n", test, result);
+	}
+	return 0;
+}
+
