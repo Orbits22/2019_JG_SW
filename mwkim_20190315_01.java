@@ -1,5 +1,7 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * SWEA 1249: 보급로
@@ -12,35 +14,35 @@ public class mwkim_20190315_01 {
 	static int[][] move = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 	
 	static void moving() {
-		for(int y = 0; y < N - 1; y++) {
-			for(int x = 1; x < N - 1; x++) {
-				int min = Integer.MAX_VALUE;
-				for(int i = 0; i < 4; i++) {
-					int ny = y + move[i][0];
-					int nx = x + move[i][1];
-					
-					if(ny >= N || nx >= N || ny < 0 || nx < 0)
-						continue;
-					
-					min = Math.min(min, map[ny][nx]);
-				}
-				dp[y][x] = map[y][x] + min;
-			}
-		}
+		Queue<int[]> queue = new LinkedList<int[]>();
+		int[] temp = new int[3];
+		temp[0] = 0;
+		temp[1] = 0;
+		temp[2] = 0;
+		queue.add(temp);
 		
-		for(int x = 0; x < N - 1; x++) {
-			for(int y = 1; y < N - 1; y++) {
-				int min = Integer.MAX_VALUE;
+		while(!queue.isEmpty()) {
+			int[] cur = queue.poll();
+			
+			if(cur[0] == N - 1 && cur[1] == N - 1) {
+				dp[cur[0]][cur[1]] = Math.min(dp[cur[0]][cur[1]], cur[2]);
+			}
+			else {
 				for(int i = 0; i < 4; i++) {
-					int ny = y + move[i][0];
-					int nx = x + move[i][1];
+					int[] next = new int[3];
+					next[0] = cur[0] + move[i][0];
+					next[1] = cur[1] + move[i][1];
 					
-					if(ny >= N || nx >= N || ny < 0 || nx < 0)
+					if(next[0] >= N || next[1] >= N || next[0] < 0 || next[1] < 0)
 						continue;
 					
-					min = Math.min(min, map[ny][nx]);
+					next[2] = cur[2] + map[next[0]][next[1]];
+					if(dp[next[0]][next[1]] <= next[2])
+						continue;
+					
+					dp[next[0]][next[1]] = next[2];
+					queue.add(next);
 				}
-				dp[y][x] = map[y][x] + min;
 			}
 		}
 	}
@@ -59,18 +61,10 @@ public class mwkim_20190315_01 {
 				char[] temp = br.readLine().toCharArray();
 				for(int x = 0; x < N; x++) {
 					map[y][x] = Character.getNumericValue(temp[x]);
+					dp[y][x] = Integer.MAX_VALUE;
 				}
  			}
 			moving();
-			System.out.println("");
-			for(int y = 0; y < N; y++) {
-				for(int x = 0; x < N; x++) {
-					System.out.print(dp[y][x] + "\t");
-				}
-				System.out.println("");
-			}
-			
-			br.close();
 			System.out.println("#" + test + " " + dp[N - 1][N - 1]);
 		}
 	}
