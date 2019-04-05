@@ -9,15 +9,15 @@ typedef struct obj {
 int W, H, r, c;
 char map[100][100];
 int minRotationNum[100][100];
-int dr[4] = {-1,0,1,0};
-int dc[4] = {0,1,0,-1};
+int dr[4] = { -1,0,1,0 };
+int dc[4] = { 0,1,0,-1 };
 
 queue<Obj> Q;
 Obj p[2];
 
 void init() {
 	scanf("%d %d", &W, &H);
-	for (int i = 0; i < H; i++) 
+	for (int i = 0; i < H; i++)
 		scanf("%s", map[i]);
 
 	int cnt = 0;
@@ -34,36 +34,35 @@ void init() {
 }
 
 int bfs() {
-
 	minRotationNum[p[0].r][p[0].c] = 0;
-	
-	for(int i = 0 ; i<4 ; i++)
+
+	for (int i = 0; i < 4; i++)
 		Q.push({ p[0].r,p[0].c,i,0 });
 
-	int nowR, nowC, preDir, nowRotationNum;
+	int nowR, nowC, nowDir, nowRotationNum;
 
 	while (!Q.empty()) {
 		nowR = Q.front().r;
 		nowC = Q.front().c;
-		preDir = Q.front().predir;
+		nowDir = Q.front().predir;
 		nowRotationNum = Q.front().rotationNum;
 
 		Q.pop();
 
-		for (int i = 0; i < 4; i++) {
-			int nextR = nowR + dr[i];
-			int nextC = nowC + dc[i];
+		for (int nextDir = 0; nextDir < 4; nextDir++) {
+			int nextR = nowR + dr[nextDir];
+			int nextC = nowC + dc[nextDir];
 			int nextRotationNum = nowRotationNum;
 
 			if (0 <= nextR && nextR < H &&
 				0 <= nextC && nextC < W &&
 				map[nextR][nextC] != '*') {
 
-				if (i != preDir) nextRotationNum++;
+				if (nextDir != nowDir) nextRotationNum++;
 
 				if (minRotationNum[nextR][nextC] >= nextRotationNum) {
 					minRotationNum[nextR][nextC] = nextRotationNum;
-					Q.push({ nextR,nextC,i, nextRotationNum });
+					Q.push({ nextR, nextC, nextDir, nextRotationNum });
 				}
 			}
 		}
@@ -74,7 +73,7 @@ int bfs() {
 int main() {
 	int answer;
 	init();
-	
+
 	answer = bfs();
 
 	printf("%d\n", answer);
