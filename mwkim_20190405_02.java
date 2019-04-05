@@ -65,7 +65,7 @@ public class mwkim_20190405_02 {
 		W = Integer.parseInt(st.nextToken());
 		H = Integer.parseInt(st.nextToken());
 		map = new char[H][W];
-		int[][] laser = new int[2][4]; //y, x, 방향, 거울사용 횟수, 움직인 횟수
+		int[][] laser = new int[2][4]; //y, x, 방향, 거울사용 횟수
 		int l = 0;
 		min = Integer.MAX_VALUE;
 		
